@@ -18,12 +18,10 @@ public enum CoffeeMenu {
     private static Map<String, CoffeeMenu> valueToTypeMap = new HashMap<>();
 
     static {
-        EnumSet.allOf(CoffeeMenu.class).stream().forEach(menu -> {
-            valueToTypeMap.put(menu.name(), menu);
-        });
+        EnumSet.allOf(CoffeeMenu.class).stream().forEach(menu -> valueToTypeMap.put(menu.name(), menu));
     }
 
-    public static Optional<CoffeeMenu> fromValue(String name) throws IllegalArgumentException {
+    public static Optional<CoffeeMenu> fromValue(String name) {
         return Optional.ofNullable(valueToTypeMap.get(name));
     }
 

@@ -26,20 +26,32 @@ public class CoffeeMachine implements Machine<Coffee, CoffeeMenu> {
     @Override
     public CompletableFuture<Coffee> getItem(CoffeeMenu menu) {
         return CompletableFuture.supplyAsync(() -> {
-            log.info("Make a coffee: {}", menu.getName());
+            log.info("Try making a coffee: {}", menu);
             return coffeeRepository.getCoffee(menu);
+        }).thenApplyAsync(successMenu -> {
+            log.info("Success make a coffee: {}", successMenu);
+            return successMenu;
+        }).exceptionally(exception -> {
+            log.error("Fail making a coffee", exception);
+            throw new RuntimeException(exception);
         });
     }
 
-    @Override
-    public CompletableFuture<List<Coffee>> getItems(CoffeeMenu... menus) {
-        List<Coffee> coffees = new ArrayList<>();
+        @Override
+        public CompletableFuture<List<Coffee>> getItems(CoffeeMenu... menus) {
+            List<Coffee> coffees = new ArrayList<>();
         return CompletableFuture.supplyAsync(() -> {
             for (CoffeeMenu menu : menus) {
                 log.info("Make a coffee: {}", menu.getName());
                 coffees.add(coffeeRepository.getCoffee(menu));
             }
             return coffees;
+        }).thenApplyAsync(coffeeList -> {
+            log.info("[SUCCESS] COFFEES: {}", coffeeList.toString());
+            return coffeeList;
+        }).exceptionally(exception -> {
+            log.error("[FAIL] EXCEPTION: {}", exception.getMessage(), exception);
+            throw new RuntimeException(exception);
         });
     }
 }
